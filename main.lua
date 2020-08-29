@@ -6,11 +6,14 @@ serpent = require "lib.debug.serpent"
 
 StateManager = require "lib.hump.gamestate"
 
+AssetManager = require "engine.asset_manager"
+
 states = {
     game = require "game.states.game"
 }
 
 function love.load()
+    AssetManager:load("data")
     StateManager.switch(states.game)
 end
 
