@@ -8,6 +8,11 @@ StateManager = require "lib.hump.gamestate"
 
 AssetManager = require "engine.asset_manager"
 
+MusicPlayer = require "engine.music_player"
+MusicData = require "game.music_data"
+
+MusicPlayer:loadData(MusicData)
+
 states = {
     game = require "game.states.game"
 }
@@ -22,6 +27,7 @@ function love.draw()
 end
 
 function love.update(dt)
+    MusicPlayer.update(dt)
     StateManager.update(dt)
 end
 

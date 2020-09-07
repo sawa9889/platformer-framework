@@ -5,10 +5,7 @@ function game:enter()
     self.sprite:setTag("idle")
     self.sprite:play()
     self.bg = AssetManager:getImage("city_background2")
-    self.music = AssetManager:getSound("barroom_ballet")
-    self.music:play()
-    self.music:setVolume(0.5)
-    self.music:setLooping(true)
+    MusicPlayer:play("level1")
     self.soundA = AssetManager:getSound("jump")
     self.soundA:setVolume(0.1)
     self.soundB = AssetManager:getSound("jump")
@@ -27,6 +24,12 @@ function game:keypressed(key)
     end
     if key == "x" then
         self.soundB:play()
+    end
+    if key == "t" then
+        MusicPlayer:play("level1")
+    end
+    if key == "y" then
+        MusicPlayer:play("level2")
     end
 end
 

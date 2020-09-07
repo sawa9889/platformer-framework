@@ -42,11 +42,13 @@ function AssetManager:_recursiveImport(path)
     local lfs = love.filesystem
     local files = lfs.getDirectoryItems(path)
     for _, file in ipairs(files) do
-        local path_to_file = path..'/'..file
-        if love.filesystem.getInfo(path_to_file).type == 'file' then
-            self:_loadFile(path, file)
-        elseif love.filesystem.getInfo(path_to_file).type == 'directory' then
-            self:_recursiveImport(path_to_file)
+        if file and file ~= ''  then -- packed .exe finds "" for some reason
+            local path_to_file = path..'/'..file
+            if love.filesystem.getInfo(path_to_file).type == 'file' then
+                self:_loadFile(path, file)
+            elseif love.filesystem.getInfo(path_to_file).type == 'directory' then
+                self:_recursiveImport(path_to_file)
+            end
         end
     end
 end
