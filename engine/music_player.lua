@@ -2,6 +2,8 @@ if not AssetManager then
     error("AssetManager is required for MusicPlayer")
 end
 
+local Timer = require("lib.hump.timer")
+
 -- require("engine.rhythm_module") -- TODO: module for rhythm synchronization
 
 local MusicPlayer = {
@@ -11,13 +13,92 @@ local MusicPlayer = {
         metadata = nil
     },
     globalMusicVolume = 1,
+    fadingVolume = {1},
+    fadingTime = 1, -- seconds
+    isCurrentlyFading = false,
+    fadingTypes = {
+        --  _________ _________
+        --  old_track|new_track
+        "instant",
+
+        --  _________   _________
+        --  old_track\./new_track
+        "out-in",
+
+        --  _________  _________
+        --  old_track\|new_track
+        "out-instant"             
+    }
 }
 
 function MusicPlayer:loadData(musicData)
     self.musicData = musicData
 end
 
-function MusicPlayer:play(track)
+function MusicPlayer:play(track, fading)
+    if self.currentTrack.name == track or self.isCurrentlyFading then
+        return
+    end
+    if fading == "out-in" then
+        self.isCurrentlyFading = true
+        Timer.tween(self.fadingTime, self.fadingVolume, {0}, "linear", 
+            function()
+                self:_switchToTrackIfNotAlreadyPlaying(track)
+                Timer.tween(self.fadingTime, self.fadingVolume, {1}, "linear",
+                    function() self.isCurrentlyFading = false end
+                )
+            end
+        )
+        return
+    end
+    if fading == "out-instant" then
+        self.isCurrentlyFading = true
+        Timer.tween(self.fadingTime, self.fadingVolume, {0}, "linear", 
+            function()
+                self:_switchToTrackIfNotAlreadyPlaying(track)
+                self.fadingVolume = {1}
+                self:_setVolume()
+                self.isCurrentlyFading = false
+            end
+        )
+        return
+    end
+    -- for "instant" and default
+    self:_switchToTrackIfNotAlreadyPlaying(track)
+end
+
+function MusicPlayer:stop()
+    if self.currentTrack.source then
+        self.currentTrack.source:stop()
+    end
+end
+
+function MusicPlayer:setGlobalVolume(volume)
+    self.globalMusicVolume = math.clamp(0, volume, 1)
+    self:_setVolume()
+end
+
+function MusicPlayer:update(dt)
+    Timer.update(dt)
+    if self.isCurrentlyFading then
+        self:_setVolume()
+    end
+    -- TODO: check music looped to go to the looping point
+    -- TODO: rhythm module stuff
+end
+
+function MusicPlayer:_setVolume()
+    if self.currentTrack.source then
+        local volume = self.globalMusicVolume
+        if self.currentTrack.metadata.volume then
+            volume = volume * self.currentTrack.metadata.volume
+        end
+        volume = volume * self.fadingVolume[1]
+        self.currentTrack.source:setVolume(volume)
+    end
+end
+
+function MusicPlayer:_switchToTrackIfNotAlreadyPlaying(track)
     if self.currentTrack.name == track and self.currentTrack.source then
         if not self.currentTrack.source:isPlaying() then
             self:_playCurrentSource()
@@ -32,26 +113,6 @@ function MusicPlayer:play(track)
     self.currentTrack.metadata = trackData
     self.currentTrack.source = AssetManager:getSound(trackData.fileName)
     self:_playCurrentSource()
-end
-
-function MusicPlayer:setGlobalVolume(volume)
-    self.globalMusicVolume = math.clamp(0, volume, 1)
-    self:_setVolume()
-end
-
-function MusicPlayer:update(dt)
-    -- TODO: check music looped to go to the looping point
-    -- TODO: rhythm module stuff
-end
-
-function MusicPlayer:_setVolume()
-    if self.currentTrack.source then
-        local volume = self.globalMusicVolume
-        if self.currentTrack.metadata.volume then
-            volume = volume * self.currentTrack.metadata.volume
-        end
-        self.currentTrack.source:setVolume(volume)
-    end
 end
 
 function MusicPlayer:_playCurrentSource()

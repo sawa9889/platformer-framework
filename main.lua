@@ -27,7 +27,7 @@ function love.draw()
 end
 
 function love.update(dt)
-    MusicPlayer.update(dt)
+    MusicPlayer:update(dt)
     StateManager.update(dt)
 end
 

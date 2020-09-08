@@ -26,10 +26,10 @@ function game:keypressed(key)
         self.soundB:play()
     end
     if key == "t" then
-        MusicPlayer:play("level1")
+        MusicPlayer:play("level1", "out-instant")
     end
     if key == "y" then
-        MusicPlayer:play("level2")
+        MusicPlayer:play("level2", "out-in")
     end
 end
 
