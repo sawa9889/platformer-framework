@@ -4,14 +4,13 @@ end
 
 local Timer = require("lib.hump.timer")
 
--- require("engine.rhythm_module") -- TODO: module for rhythm synchronization
-
 local MusicPlayer = {
     currentTrack = {
         name = nil,
         source = nil,
         metadata = nil
     },
+    rhythmModule = require("engine.rhythm_module"),
     globalMusicVolume = 1,
     fadingVolume = {1},
     fadingTime = 1, -- seconds
@@ -33,6 +32,9 @@ local MusicPlayer = {
 
 function MusicPlayer:loadData(musicData)
     self.musicData = musicData
+    if MusicPlayer.rhythmModule then
+        MusicPlayer.rhythmModule:initMusicData(self.currentTrack)
+    end
 end
 
 function MusicPlayer:play(track, fading)
@@ -78,13 +80,21 @@ function MusicPlayer:setGlobalVolume(volume)
     self:_setVolume()
 end
 
+function MusicPlayer:registerRhythmCallback(beatsType, fn)
+    if self.rhythmModule then
+        self.rhythmModule:registerRhythmCallback(beatsType, fn)
+    end
+end
+
 function MusicPlayer:update(dt)
     Timer.update(dt)
     if self.isCurrentlyFading then
         self:_setVolume()
     end
     -- TODO: check music looped to go to the looping point
-    -- TODO: rhythm module stuff
+    if self.rhythmModule then
+        self.rhythmModule:update(dt)
+    end
 end
 
 function MusicPlayer:_setVolume()
