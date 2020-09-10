@@ -2,7 +2,8 @@ Class = require "lib.hump.class"
 Vector = require "lib.hump.vector"
 -- Остаётся только для параметров и базового функционала любого физичного объекта, из него не вызываются upadte и draw всякие
 PhysicsObject = Class {
-    init = function(self, gravity, maxSpeed, isColliding)
+    init = function(self, x, y, gravity, maxSpeed, isColliding) 
+        self.position    = Vector( x, y )
         self.speed       = Vector( 0, 0 )
         self.gravity     = gravity
         self.deltaVector = Vector( 0, 0 )

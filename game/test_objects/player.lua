@@ -4,14 +4,12 @@ PhysicsObject = require "engine.physics.physics_object"
 
 Player =
     Class {
-    __includes = PhysicsObject,
-    init = function(self, x, y, colliderWidth, colliderHeight, hc)      
-        self.position = Vector( x, y )
-        self.collider = hc:rectangle(self.position.x, self.position.y, colliderWidth, colliderHeight)
+    init = function(self, x, y, hc)     
+        self.collider = hc:rectangle(self.position.x, self.position.y, 10, 12)
         self.acceleration  = 10
         self.slowDownSpeed = 20
         self.jumpSpeed     = 0.5
-        PhysicsProcessor:registerObject( self, 'player', 'RigidBody')
+        PhysicsProcessor:registerObject( self, x, y, 'player', 'RigidBody')
     end
 }
 
