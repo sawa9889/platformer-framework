@@ -11,6 +11,12 @@ AssetManager = require "engine.asset_manager"
 MusicPlayer = require "engine.music_player"
 MusicData = require "game.music_data"
 
+PhysicsProocessor = require "engine.physics_processor"
+PhysicsProocessorImpl = require "game.test_objects.physics_processor_impl"
+
+Player = require "game.test_objects.player"
+Box = require "game.test_objects.box"
+
 MusicPlayer:loadData(MusicData)
 
 states = {

@@ -11,20 +11,17 @@ PhysicsObject = Class {
         self.isGrounded = false
         self.isColliding = isColliding and isColliding or true
 
+        self.slowDownSpeed = 0.1
         self.maxSpeed      = maxSpeed
-    end,
-    maxGroundNormal = 0.05,
-    minGroundNormal = 0.005,
-    minMove         = 0.01
+        self.maxGroundNormal = 0.05
+        self.minGroundNormal = 0.005
+        self.minMove         = 0.01
+    end
+    
 }
 
 function defaultCollisionReaction(object, delta)
     object.deltaVector = object.deltaVector + delta
-end
-
-function PhysicsObject:move( moveVector )
-    self.position = self.position + moveVector
-    self.collider:move(moveVector)
 end
 
 return PhysicsObject
